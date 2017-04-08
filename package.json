@@ -1,10 +1,11 @@
 {
   "name": "nelibot",
   "version": "1.0.0",
-  "description": "A skype both for financial, trend and competitive analysis",
-  "main": "index.js",
+  "description": "A skype bot for financial, trend and competitive analysis",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "app.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/kenigbolo/neliBot/issues"
   },
-  "homepage": "https://github.com/kenigbolo/neliBot#readme"
+  "homepage": "https://github.com/kenigbolo/neliBot#readme",
+  "dependencies": {
+    "botbuilder": "^3.7.0",
+    "nodemon": "^1.11.0",
+    "restify": "^4.3.0"
+  }
 }
