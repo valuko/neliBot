@@ -24,9 +24,8 @@ bot.on('contactRelationUpdate', function (message) {
         var reply = new builder.Message()
                 .address(message.address)
                 .text(
-                  "Hello %s... Thanks for adding me. \
-                  My name is Neli and I am a bot that helps you with coporate information about Estonian Comapnies\
-                  Type in the company name 'Mooncascade' to get the company's coporate information", name || 'there'
+                  "Hello %s... Thanks for adding me. My name is Neli and I am a bot that helps you with coporate information about\
+                  Estonian Comapnies. Test me out by typing 'Get me financial information on Mooncascade' to get the company's financial information", name || 'there'
                 );
         bot.send(reply);
     } else {
@@ -53,6 +52,10 @@ function checkMessage(message, valueToCheck) {
   }
 }
 
+function capitalize(str){
+    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 bot.dialog('/', function (session) {
     var message = session.message.text.toLowerCase();
     if(checkMessage(message, 'hello')){
@@ -71,7 +74,7 @@ bot.dialog('/', function (session) {
           session.send(buffer);
         });
       });
-    }else if(checkMessage(message, 'info') | checkMessage(message, 'infomation')){
+    }else if(checkMessage(message, 'information') || checkMessage(message, 'info')){
       var name = session.message.user ? session.message.user.name : null;
       if(checkMessage(message, 'board')){
         session.send('Hang on a few seconds while we get you the required company board information');
@@ -82,7 +85,7 @@ bot.dialog('/', function (session) {
       }else if (checkMessage(message, 'credit')) {
         session.send('Hang on a few seconds while we get you the required credit information');
       }else {
-        session.send('Hey %s... What kind of information exactly do you want and for what company?', name || 'there');
+        session.send('Hey %s... What kind of information exactly do you want and for what company?', capitalize(name) || 'there');
       }
       }else{
         session.send(`Sorry I'm not so smart yet :D I'm still a work in progress :)`);
