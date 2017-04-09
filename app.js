@@ -53,20 +53,50 @@ function checkMessage(message, valueToCheck) {
 }
 
 function getInfoRegData(session, company, action) {
-    http.get('http://api.fixer.io/latest', function(res){
+    var host = "http://nellychatbot-randomnames.azurewebsites.net/api"
+    var params = "?company=%cm&action=%ac".replace(/%cm/, company).replace(/%ac/, action);
+    var query = host + params
+    console.log(query);
+    http.get(query, function(res){
       var buffer = "";
       res.on('data', function(chunk) {
+        session.send(res.code);
         buffer += chunk;
       });
 
       res.on('end', function(){
-        session.send(buffer);
+        var bufferStr = buffer;
+        const bufferJson = JSON.parse(bufferStr);
+        if (typeof bufferJson.message === 'undefined') {
+          session.send("Hey, I couldn't get you the requested information at the moment :D I'm still a work in progress");
+        } else {
+          session.send(bufferJson.message);
+        }
+      });
+
+      res.on('error', function(){
+        session.send("Hey, I couldn't get find anything on the company. Try again please");
       });
     });
 }
 
+function getCompanyName(message){
+  var indexValue = message.indexOf("of ");
+  let companyName;
+  if (indexValue < 1) {
+    companyName = message.substring(message.lastIndexOf('on ')+3);
+  }else {
+    companyName = message.substring(message.lastIndexOf('of ')+3);
+  }
+  return companyName;
+}
+
 function capitalize(str){
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+function defaultErrorMessage(session){
+  session.send(`Sorry I'm not so smart yet :D I'm still a work in progress :)`);
 }
 
 bot.dialog('/', function (session) {
@@ -89,18 +119,24 @@ bot.dialog('/', function (session) {
       });
     }else if(checkMessage(message, 'information') || checkMessage(message, 'info')){
       var name = session.message.user ? session.message.user.name : null;
+      let companyName;
       if(checkMessage(message, 'board')){
         session.send('Hang on a few seconds while we get you the required company board information');
+        companyName = getCompanyName(message);
+        getInfoRegData(session, companyName, 'board');
       }else if (checkMessage(message, 'history')) {
-        session.send('Hang on a few seconds while we get you the required company history information');
+        defaultErrorMessage(session);
       }else if (checkMessage(message, 'financial')) {
         session.send('Hang on a few seconds while we get you the required financial information');
+        companyName = getCompanyName(message);
+        console.log(companyName);
+        getInfoRegData(session, companyName, 'financial');
       }else if (checkMessage(message, 'credit')) {
-        session.send('Hang on a few seconds while we get you the required credit information');
+        defaultErrorMessage(session);
       }else {
         session.send('Hey %s... What kind of information exactly do you want and for what company?', capitalize(name) || 'there');
       }
       }else{
-        session.send(`Sorry I'm not so smart yet :D I'm still a work in progress :)`);
+        defaultErrorMessage(session);
       }
 });
