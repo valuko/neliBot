@@ -52,6 +52,19 @@ function checkMessage(message, valueToCheck) {
   }
 }
 
+function getInfoRegData(session, company, action) {
+    http.get('http://api.fixer.io/latest', function(res){
+      var buffer = "";
+      res.on('data', function(chunk) {
+        buffer += chunk;
+      });
+
+      res.on('end', function(){
+        session.send(buffer);
+      });
+    });
+}
+
 function capitalize(str){
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
